@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,17 +11,17 @@ import (
 
 var userCollectionName = "users"
 
-func GetUsers() []models.User {
+func GetUsers() ([]models.User, error) {
 	var userCollection = MongoClient.Database(DatabaseName).Collection(userCollectionName)
 
 	var users []models.User
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.TODO(), 2*time.Second)
 	defer cancel()
 
 	cur, err := userCollection.Find(ctx, bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer cur.Close(ctx)
@@ -31,15 +30,15 @@ func GetUsers() []models.User {
 		err := cur.Decode(&user)
 
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		users = append(users, user)
 	}
 
 	if err := cur.Err(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return users
+	return users, nil
 }

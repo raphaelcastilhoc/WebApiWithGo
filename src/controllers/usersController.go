@@ -9,11 +9,13 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	var users = datastore.GetUsers()
+	users, err := datastore.GetUsers()
 
-	if len(users) > 0 {
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+	} else if len(users) > 0 {
 		c.JSON(http.StatusOK, users)
 	} else {
-		c.JSON(http.StatusNotFound, gin.H{"code": "DATA_NOT_FOUND", "message": "Data not found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Data not found"})
 	}
 }

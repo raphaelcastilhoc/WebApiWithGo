@@ -1,7 +1,11 @@
 package models
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type User struct {
-	Id        uint
+	Id        primitive.ObjectID `bson:"_id" json:"id"`
 	FirstName string
 	LastName  string
 }
